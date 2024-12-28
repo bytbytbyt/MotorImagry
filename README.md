@@ -16,6 +16,20 @@ A motor Imagry task based on EEGNET and EEGTCNET.
 The dataset is BCI VI-4a http://bnci-horizon-2020.eu/database/data-sets.
 ## Reference
 If you find this work useful in your research, please use the following BibTeX entry for citation.
+
+```
+@article{lawhern2018eegnet,
+  title={EEGNet: a compact convolutional neural network for EEG-based brain--computer interfaces},
+  author={Lawhern, Vernon J and Solon, Amelia J and Waytowich, Nicholas R and Gordon, Stephen M and Hung, Chou P and Lance, Brent J},
+  journal={Journal of neural engineering},
+  volume={15},
+  number={5},
+  pages={056013},
+  year={2018},
+  publisher={iOP Publishing}
+}
+```
+
 ```
 @inproceedings{ingolfsson2020eeg,
   title={EEG-TCNet: An accurate temporal convolutional network for embedded motor-imagery brain--machine interfaces},
@@ -25,7 +39,4 @@ If you find this work useful in your research, please use the following BibTeX e
   year={2020},
   organization={IEEE}
 }
-```
-```
-
 ```
