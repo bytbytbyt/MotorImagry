@@ -1,21 +1,3 @@
-""" 
-Copyright (C) 2022 King Saud University, Saudi Arabia 
-SPDX-License-Identifier: Apache-2.0 
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the 
-License at
-
-http://www.apache.org/licenses/LICENSE-2.0  
-
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-CONDITIONS OF ANY KIND, either express or implied. See the License for the
-specific language governing permissions and limitations under the License. 
-
-Author:  Hamdi Altaheri 
-"""
-
 # Dataset BCI Competition IV-2a is available on 
 # http://bnci-horizon-2020.eu/database/data-sets
 
@@ -28,27 +10,6 @@ from scipy.fft import fft
 
 # %%
 def load_data_LOSO(data_path, subject):
-    """ Loading and Dividing of the data set based on the 
-    'Leave One Subject Out' (LOSO) evaluation approach. 
-    LOSO is used for  Subject-independent evaluation.
-    In LOSO, the model is trained and evaluated by several folds, equal to the 
-    number of subjects, and for each fold, one subject is used for evaluation
-    and the others for training. The LOSO evaluation technique ensures that 
-    separate subjects (not visible in the training data) are usedto evaluate 
-    the model. 
-   
-        Parameters
-        ----------
-        data_path: string
-            dataset path
-            # Dataset BCI Competition IV-2a is available on 
-            # http://bnci-horizon-2020.eu/database/data-sets
-        subject: int
-            number of subject in [1, .. ,9]
-            Here, the subject data is used  test the model and other subjects data
-            for training
-    """
-
     X_train, y_train = [], []
     for sub in range(0, 9):
         # path = data_path+'s' + str(sub+1) + '/'
@@ -73,27 +34,6 @@ def load_data_LOSO(data_path, subject):
 
 # %%
 def load_data(data_path, subject, training, all_trials=True):
-    """ Loading and Dividing of the data set based on the subject-specific
-    (subject-dependent) approach.
-    In this approach, we used the same training and testing dataas the original
-    competition, i.e., 288 x 9 trials in session 1 for training, 
-    and 288 x 9 trials in session 2 for testing.  
-   
-        Parameters
-        ----------
-        data_path: string
-            dataset path
-            # Dataset BCI Competition IV-2a is available on 
-            # http://bnci-horizon-2020.eu/database/data-sets
-        subject: int
-            number of subject in [1, .. ,9]
-        training: bool
-            if True, load training data
-            if False, load testing data
-        all_trials: bool
-            if True, load all trials
-            if False, ignore trials with artifacts 
-    """
     # Define MI-trials parameters
     n_channels = 22
     n_tests = 6 * 48
@@ -179,109 +119,3 @@ def get_data(path, subject, LOSO=False, isStandard=True):
         X_train, X_test = standardize_data(X_train, X_test, N_ch)
 
     return X_train, y_train, y_train_onehot, X_test, y_test, y_test_onehot
-
-
-
-# def get_data(path, subject, LOSO=False, isStandard=True, feature_type='time'):
-#     # Define dataset parameters
-#     fs = 250  # sampling rate
-#     t1 = int(1.5 * fs)  # start time_point
-#     t2 = int(6 * fs)  # end time_point
-#     T = t2 - t1  # length of the MI trial (samples or time_points)
-
-#     # Load and split the dataset into training and testing 
-#     if LOSO:
-#         # Loading and Dividing of the data set based on the 
-#         # 'Leave One Subject Out' (LOSO) evaluation approach. 
-#         X_train, y_train, X_test, y_test = load_data_LOSO(path, subject)
-#     else:
-#         # Loading and Dividing of the data set based on the subject-specific 
-#         # (subject-dependent) approach. 
-#         path = path
-#         X_train, y_train = load_data(path, subject + 1, True)
-#         X_test, y_test = load_data(path, subject + 1, False)
-
-#     # Prepare training data
-#     N_tr, N_ch, _ = X_train.shape
-#     X_train = X_train[:, :, t1:t2].reshape(N_tr, 1, N_ch, T)
-#     y_train_onehot = (y_train - 1).astype(int)
-#     y_train_onehot = to_categorical(y_train_onehot)
-
-#     # Extract features from the training data
-#     X_train_features = extract_features(X_train, fs, feature_type)
-
-#     # Prepare testing data 
-#     N_test, N_ch, _ = X_test.shape
-#     X_test = X_test[:, :, t1:t2].reshape(N_test, 1, N_ch, T)
-#     y_test_onehot = (y_test - 1).astype(int)
-#     y_test_onehot = to_categorical(y_test_onehot)
-
-#     # Extract features from the testing data
-#     X_test_features = extract_features(X_test, fs, feature_type)
-
-#     # Standardize the data
-#     if isStandard:
-#         X_train_features, X_test_features = standardize_data(X_train_features, X_test_features, X_train_features.shape[1])
-
-#     return X_train_features, y_train, y_train_onehot, X_test_features, y_test, y_test_onehot
-
-
-
-
-# def extract_features(X, fs, feature_type='time'):
-#     """
-#     Extract features from EEG signals (time-domain and frequency-domain features).
-    
-#     Parameters:
-#     ----------
-#     X : numpy.ndarray
-#         EEG data of shape [trials, channels, time_points].
-#     fs : int
-#         Sampling frequency.
-#     feature_type : str
-#         Type of features to extract: 'time' for time-domain features, 
-#         'frequency' for frequency-domain features, or 'both' for both.
-
-#     Returns:
-#     -------
-#     features : numpy.ndarray
-#         Extracted features of shape [trials, channels, feature_count].
-#     """
-    
-#     # Check the shape of X and ensure it's 3D (trials, channels, time_points)
-#     if len(X.shape) == 4:
-#         X = np.squeeze(X)  # Remove the extra dimension if present (e.g., shape [trials, 1, channels, time_points])
-
-#     trials, channels, time_points = X.shape
-#     print(f"X.shape: {X.shape}")  # Print out the shape of X for debugging
-#     features = []
-
-#     for trial in range(trials):
-#         trial_features = []
-
-#         for ch in range(channels):
-#             signal = X[trial, ch, :]
-            
-#             # Time-domain features
-#             if feature_type == 'time' or feature_type == 'both':
-#                 mean = np.mean(signal)
-#                 std = np.std(signal)
-#                 skewness = stats.skew(signal)
-#                 kurtosis = stats.kurtosis(signal)
-#                 trial_features.extend([mean, std, skewness, kurtosis])
-            
-#             # Frequency-domain features (via FFT)
-#             if feature_type == 'frequency' or feature_type == 'both':
-#                 fft_vals = fft(signal)
-#                 freqs = np.fft.fftfreq(time_points, 1/fs)
-#                 # Taking the positive frequencies only
-#                 pos_freqs = freqs[:time_points//2]
-#                 pos_fft_vals = np.abs(fft_vals[:time_points//2])
-                
-#                 # Example: extract power in the alpha band (8-12 Hz)
-#                 alpha_band = (pos_freqs >= 8) & (pos_freqs <= 12) 
-#                 alpha_power = np.sum(pos_fft_vals[alpha_band]) 
-#                 trial_features.append(alpha_power) 
-#         features.append(trial_features) 
-        
-#     return np.array(features)
